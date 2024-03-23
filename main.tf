@@ -5,11 +5,8 @@
 
 resource "aws_instance" "test_instance" {
  ami           = "ami-0c101f26f147fa7fd"
- instance_type = var.instance_type
+ instance_type = "t2.micro"
  tags = {
-   Name = "test_instance"
+   Name = "test1_instance"
  }
-}
-variable "instance_type" {
-    default = "t2.micro"
 }
