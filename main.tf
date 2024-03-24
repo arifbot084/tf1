@@ -18,7 +18,3 @@ resource "aws_vpc" "my_vpc" {
   }
   
 }
-resource "aws_subnet" "web-subnet" {
-  vpc_id     = aws_vpc.my_vpc.id
-  cidr_block = "10.10.10.0/24"
-}
