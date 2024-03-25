@@ -10,3 +10,12 @@ resource "aws_vpc" "my_vpc" {
   }
   
 }
+resource "aws_subnet" "mysubnet" {
+  vpc_id = aws_vpc.my_vpc.id
+  cidr_block = "10.10.10.0/24"
+  availability_zone = "us-east-1a"
+  tags = {
+    Name = "mysubnet"
+  }
+  
+}
