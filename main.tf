@@ -23,19 +23,3 @@ provider "aws" {
   region = "us-west-2"
 }
 
-resource "aws_dynamodb_table" "example" {
-  name           = "example-table"
-  read_capacity  = 20
-  write_capacity = 20
-  hash_key       = "Id"
-
-  attribute {
-    name = "Id"
-    type = "N"
-  }
-
-  tags = {
-    Environment = "production"
-    Name        = "example-table"
-  }
-}
