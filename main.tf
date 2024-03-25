@@ -19,7 +19,4 @@ resource "aws_subnet" "mysubnet" {
   }
   
 }
-provider "aws" {
-  region = "us-west-2"
-}
 
