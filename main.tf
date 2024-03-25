@@ -19,9 +19,7 @@ resource "aws_subnet" "mysubnet" {
   }
   
 }
-provider "aws" {
-  region = "us-west-2"
-}
+
 
 resource "aws_dynamodb_table" "example" {
   name           = "example-table"
