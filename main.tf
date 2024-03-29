@@ -10,42 +10,24 @@ resource "aws_vpc" "my_vpc" {
   }
   
 }
-resource "aws_subnet" "mysubnet" {
-  vpc_id = aws_vpc.my_vpc.id
-  cidr_block = "10.10.10.0/24"
-  availability_zone = "us-east-1a"
-  tags = {
-    Name = "mysubnet"
-  }
+data "aws_availability_zones" "available" {}
+
+variable "Private_subnet_cidr_blocks" {
+  description = "List of CIDR blocks for the Private subnets"
+  type        = list(string)
+  default     = ["10.10.1.0/24", "10.10.2.0/24"]
+}
+
+resource "aws_subnet" "Private_subnets" {
+  count                   = length(var.Private_subnet_cidr_blocks)
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = var.Private_subnet_cidr_blocks[count.index]
+  availability_zone       = element(data.aws_availability_zones.available.names, count.index)
   
-}
-
-
-resource "aws_subnet" "mysubnet2" {
-  vpc_id = aws_vpc.my_vpc.id
-  cidr_block = "10.10.20.0/24"
-  availability_zone = "us-east-1a"
-  tags = {
-    Name = "mysubnet"
-  }
-  
-}
-
-
-
-resource "aws_dynamodb_table" "example" {
-  name           = "example-table"
-  read_capacity  = 20
-  write_capacity = 20
-  hash_key       = "Id"
-
-  attribute {
-    name = "Id"
-    type = "N"
-  }
 
   tags = {
-    Environment = "production"
-    Name        = "example-table"
+    Name = "Private_subnet_${count.index}"
   }
 }
+
+
