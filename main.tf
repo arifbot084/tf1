@@ -1,6 +1,5 @@
- provider "aws" {    
+provider "aws" {    
   region = "us-east-1"
-  
 }
 
 resource "aws_vpc" "my_vpc" {
@@ -8,44 +7,43 @@ resource "aws_vpc" "my_vpc" {
   tags = {
     Name = "my_vpc"
   }
-  
 }
-resource "aws_subnet" "mysubnet" {
+
+variable "public_subnets" {
+  description = "A list of CIDR blocks for the public subnets"
+  type        = list(string)
+  default     = ["10.10.1.0/24", "10.10.2.0/24", "10.10.3.0/24"]
+}
+
+resource "aws_subnet" "public" {
+  count                   = length(var.public_subnets)
+  vpc_id                  = aws_vpc.my_vpc.id
+  cidr_block              = var.public_subnets[count.index]
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "PublicSubnet-${count.index}"
+  }
+}
+
+resource "aws_route_table" "public" {
   vpc_id = aws_vpc.my_vpc.id
-  cidr_block = "10.10.10.0/24"
-  availability_zone = "us-east-1a"
-  tags = {
-    Name = "mysubnet"
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.my_igw.id
   }
-  
 }
-
-
-resource "aws_subnet" "mysubnet2" {
+resource "aws_internet_gateway" "my_igw" {
   vpc_id = aws_vpc.my_vpc.id
-  cidr_block = "10.10.20.0/24"
-  availability_zone = "us-east-1a"
+
   tags = {
-    Name = "mysubnet"
+    Name = "my_igw"
   }
-  
 }
 
-
-
-resource "aws_dynamodb_table" "example" {
-  name           = "example-table"
-  read_capacity  = 20
-  write_capacity = 20
-  hash_key       = "Id"
-
-  attribute {
-    name = "Id"
-    type = "N"
-  }
-
-  tags = {
-    Environment = "production"
-    Name        = "example-table"
-  }
+resource "aws_route_table_association" "public" {
+  count          = length(var.public_subnets)
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public.id
 }
