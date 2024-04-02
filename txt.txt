@@ -2,3 +2,4 @@ this is remote text
 
 stashing1
 second txt
+this is remote text checking for stashing
